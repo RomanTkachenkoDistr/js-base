@@ -65,7 +65,8 @@ enum LedgerEntryType
     ACCOUNT = 0,
     TRUSTLINE = 1,
     OFFER = 2,
-    DATA = 3
+    DATA = 3,
+	DIRECT_DEBIT = 4
 };
 
 struct Signer
@@ -87,6 +88,9 @@ enum AccountFlags
     // Once set, causes all AUTH_* flags to be read-only
     AUTH_IMMUTABLE_FLAG = 0x4
 };
+
+// mask for all valid flags
+const MASK_ACCOUNT_FLAGS = 0x7;
 
 /* AccountEntry
 
@@ -136,6 +140,11 @@ enum TrustLineFlags
     AUTHORIZED_FLAG = 1
 };
 
+
+
+// mask for all trustline flags
+const MASK_TRUSTLINE_FLAGS = 1;
+
 struct TrustLineEntry
 {
     AccountID accountID; // account this trustline belongs to
@@ -160,6 +169,9 @@ enum OfferEntryFlags
     // issuer has authorized account to perform transactions with its credit
     PASSIVE_FLAG = 1
 };
+
+// Mask for OfferEntry flags
+const MASK_OFFERENTRY_FLAGS = 1;
 
 /* OfferEntry
     An offer is the building block of the offer book, they are automatically
@@ -212,6 +224,22 @@ struct DataEntry
 };
 
 
+struct DirectDebitEntry
+{
+   
+	AccountID debitor;
+    AccountID creditor;
+    Asset asset;         
+    
+
+    // reserved for future use
+    union switch (int v)
+    {
+    case 0:
+        void;
+    }
+    ext;
+};
 struct LedgerEntry
 {
     uint32 lastModifiedLedgerSeq; // ledger the LedgerEntry was last changed
@@ -226,6 +254,8 @@ struct LedgerEntry
         OfferEntry offer;
     case DATA:
         DataEntry data;
+	case DIRECT_DEBIT:
+	    DirectDebitEntry directDebit;
     }
     data;
 

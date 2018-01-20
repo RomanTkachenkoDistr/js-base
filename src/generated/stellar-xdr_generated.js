@@ -1,4 +1,4 @@
-// Automatically generated on 2017-02-08T14:45:22+01:00
+// Automatically generated on 2018-01-20T15:07:06+02:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -254,6 +254,211 @@ xdr.struct("ScpQuorumSet", [
 
 // === xdr source ============================================================
 //
+//   typedef opaque Hash[32];
+//
+// ===========================================================================
+xdr.typedef("Hash", xdr.opaque(32));
+
+// === xdr source ============================================================
+//
+//   typedef opaque uint256[32];
+//
+// ===========================================================================
+xdr.typedef("Uint256", xdr.opaque(32));
+
+// === xdr source ============================================================
+//
+//   typedef unsigned int uint32;
+//
+// ===========================================================================
+xdr.typedef("Uint32", xdr.uint());
+
+// === xdr source ============================================================
+//
+//   typedef int int32;
+//
+// ===========================================================================
+xdr.typedef("Int32", xdr.int());
+
+// === xdr source ============================================================
+//
+//   typedef unsigned hyper uint64;
+//
+// ===========================================================================
+xdr.typedef("Uint64", xdr.uhyper());
+
+// === xdr source ============================================================
+//
+//   typedef hyper int64;
+//
+// ===========================================================================
+xdr.typedef("Int64", xdr.hyper());
+
+// === xdr source ============================================================
+//
+//   enum CryptoKeyType
+//   {
+//       KEY_TYPE_ED25519 = 0,
+//       KEY_TYPE_PRE_AUTH_TX = 1,
+//       KEY_TYPE_HASH_X = 2
+//   };
+//
+// ===========================================================================
+xdr.enum("CryptoKeyType", {
+  keyTypeEd25519: 0,
+  keyTypePreAuthTx: 1,
+  keyTypeHashX: 2,
+});
+
+// === xdr source ============================================================
+//
+//   enum PublicKeyType
+//   {
+//       PUBLIC_KEY_TYPE_ED25519 = KEY_TYPE_ED25519
+//   };
+//
+// ===========================================================================
+xdr.enum("PublicKeyType", {
+  publicKeyTypeEd25519: 0,
+});
+
+// === xdr source ============================================================
+//
+//   enum SignerKeyType
+//   {
+//       SIGNER_KEY_TYPE_ED25519 = KEY_TYPE_ED25519,
+//       SIGNER_KEY_TYPE_PRE_AUTH_TX = KEY_TYPE_PRE_AUTH_TX,
+//       SIGNER_KEY_TYPE_HASH_X = KEY_TYPE_HASH_X
+//   };
+//
+// ===========================================================================
+xdr.enum("SignerKeyType", {
+  signerKeyTypeEd25519: 0,
+  signerKeyTypePreAuthTx: 1,
+  signerKeyTypeHashX: 2,
+});
+
+// === xdr source ============================================================
+//
+//   union PublicKey switch (PublicKeyType type)
+//   {
+//   case PUBLIC_KEY_TYPE_ED25519:
+//       uint256 ed25519;
+//   };
+//
+// ===========================================================================
+xdr.union("PublicKey", {
+  switchOn: xdr.lookup("PublicKeyType"),
+  switchName: "type",
+  switches: [
+    ["publicKeyTypeEd25519", "ed25519"],
+  ],
+  arms: {
+    ed25519: xdr.lookup("Uint256"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union SignerKey switch (SignerKeyType type)
+//   {
+//   case SIGNER_KEY_TYPE_ED25519:
+//       uint256 ed25519;
+//   case SIGNER_KEY_TYPE_PRE_AUTH_TX:
+//       /* Hash of Transaction structure */
+//       uint256 preAuthTx;
+//   case SIGNER_KEY_TYPE_HASH_X:
+//       /* Hash of random 256 bit preimage X */
+//       uint256 hashX;
+//   };
+//
+// ===========================================================================
+xdr.union("SignerKey", {
+  switchOn: xdr.lookup("SignerKeyType"),
+  switchName: "type",
+  switches: [
+    ["signerKeyTypeEd25519", "ed25519"],
+    ["signerKeyTypePreAuthTx", "preAuthTx"],
+    ["signerKeyTypeHashX", "hashX"],
+  ],
+  arms: {
+    ed25519: xdr.lookup("Uint256"),
+    preAuthTx: xdr.lookup("Uint256"),
+    hashX: xdr.lookup("Uint256"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   typedef opaque Signature<64>;
+//
+// ===========================================================================
+xdr.typedef("Signature", xdr.varOpaque(64));
+
+// === xdr source ============================================================
+//
+//   typedef opaque SignatureHint[4];
+//
+// ===========================================================================
+xdr.typedef("SignatureHint", xdr.opaque(4));
+
+// === xdr source ============================================================
+//
+//   typedef PublicKey NodeID;
+//
+// ===========================================================================
+xdr.typedef("NodeId", xdr.lookup("PublicKey"));
+
+// === xdr source ============================================================
+//
+//   struct Curve25519Secret
+//   {
+//           opaque key[32];
+//   };
+//
+// ===========================================================================
+xdr.struct("Curve25519Secret", [
+  ["key", xdr.opaque(32)],
+]);
+
+// === xdr source ============================================================
+//
+//   struct Curve25519Public
+//   {
+//           opaque key[32];
+//   };
+//
+// ===========================================================================
+xdr.struct("Curve25519Public", [
+  ["key", xdr.opaque(32)],
+]);
+
+// === xdr source ============================================================
+//
+//   struct HmacSha256Key
+//   {
+//           opaque key[32];
+//   };
+//
+// ===========================================================================
+xdr.struct("HmacSha256Key", [
+  ["key", xdr.opaque(32)],
+]);
+
+// === xdr source ============================================================
+//
+//   struct HmacSha256Mac
+//   {
+//           opaque mac[32];
+//   };
+//
+// ===========================================================================
+xdr.struct("HmacSha256Mac", [
+  ["mac", xdr.opaque(32)],
+]);
+
+// === xdr source ============================================================
+//
 //   typedef PublicKey AccountID;
 //
 // ===========================================================================
@@ -416,7 +621,8 @@ xdr.enum("ThresholdIndices", {
 //       ACCOUNT = 0,
 //       TRUSTLINE = 1,
 //       OFFER = 2,
-//       DATA = 3
+//       DATA = 3,
+//   	DIRECT_DEBIT = 4
 //   };
 //
 // ===========================================================================
@@ -425,6 +631,7 @@ xdr.enum("LedgerEntryType", {
   trustline: 1,
   offer: 2,
   datum: 3,
+  directDebit: 4,
 });
 
 // === xdr source ============================================================
@@ -463,6 +670,13 @@ xdr.enum("AccountFlags", {
   authRevocableFlag: 2,
   authImmutableFlag: 4,
 });
+
+// === xdr source ============================================================
+//
+//   const MASK_ACCOUNT_FLAGS = 0x7;
+//
+// ===========================================================================
+xdr.const("MASK_ACCOUNT_FLAGS", 0x7);
 
 // === xdr source ============================================================
 //
@@ -541,6 +755,13 @@ xdr.enum("TrustLineFlags", {
 
 // === xdr source ============================================================
 //
+//   const MASK_TRUSTLINE_FLAGS = 1;
+//
+// ===========================================================================
+xdr.const("MASK_TRUSTLINE_FLAGS", 1);
+
+// === xdr source ============================================================
+//
 //   union switch (int v)
 //       {
 //       case 0:
@@ -601,6 +822,13 @@ xdr.struct("TrustLineEntry", [
 xdr.enum("OfferEntryFlags", {
   passiveFlag: 1,
 });
+
+// === xdr source ============================================================
+//
+//   const MASK_OFFERENTRY_FLAGS = 1;
+//
+// ===========================================================================
+xdr.const("MASK_OFFERENTRY_FLAGS", 1);
 
 // === xdr source ============================================================
 //
@@ -706,6 +934,52 @@ xdr.struct("DataEntry", [
 
 // === xdr source ============================================================
 //
+//   union switch (int v)
+//       {
+//       case 0:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("DirectDebitEntryExt", {
+  switchOn: xdr.int(),
+  switchName: "v",
+  switches: [
+    [0, xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct DirectDebitEntry
+//   {
+//      
+//   	AccountID debitor;
+//       AccountID creditor;
+//       Asset asset;         
+//       
+//   
+//       // reserved for future use
+//       union switch (int v)
+//       {
+//       case 0:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("DirectDebitEntry", [
+  ["debitor", xdr.lookup("AccountId")],
+  ["creditor", xdr.lookup("AccountId")],
+  ["asset", xdr.lookup("Asset")],
+  ["ext", xdr.lookup("DirectDebitEntryExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union switch (LedgerEntryType type)
 //       {
 //       case ACCOUNT:
@@ -716,6 +990,8 @@ xdr.struct("DataEntry", [
 //           OfferEntry offer;
 //       case DATA:
 //           DataEntry data;
+//   	case DIRECT_DEBIT:
+//   	    DirectDebitEntry directDebit;
 //       }
 //
 // ===========================================================================
@@ -727,12 +1003,14 @@ xdr.union("LedgerEntryData", {
     ["trustline", "trustLine"],
     ["offer", "offer"],
     ["datum", "data"],
+    ["directDebit", "directDebit"],
   ],
   arms: {
     account: xdr.lookup("AccountEntry"),
     trustLine: xdr.lookup("TrustLineEntry"),
     offer: xdr.lookup("OfferEntry"),
     data: xdr.lookup("DataEntry"),
+    directDebit: xdr.lookup("DirectDebitEntry"),
   },
 });
 
@@ -771,6 +1049,8 @@ xdr.union("LedgerEntryExt", {
 //           OfferEntry offer;
 //       case DATA:
 //           DataEntry data;
+//   	case DIRECT_DEBIT:
+//   	    DirectDebitEntry directDebit;
 //       }
 //       data;
 //   
@@ -947,7 +1227,8 @@ xdr.struct("LedgerHeader", [
 //   {
 //       LEDGER_UPGRADE_VERSION = 1,
 //       LEDGER_UPGRADE_BASE_FEE = 2,
-//       LEDGER_UPGRADE_MAX_TX_SET_SIZE = 3
+//       LEDGER_UPGRADE_MAX_TX_SET_SIZE = 3,
+//       LEDGER_UPGRADE_BASE_RESERVE = 4
 //   };
 //
 // ===========================================================================
@@ -955,6 +1236,7 @@ xdr.enum("LedgerUpgradeType", {
   ledgerUpgradeVersion: 1,
   ledgerUpgradeBaseFee: 2,
   ledgerUpgradeMaxTxSetSize: 3,
+  ledgerUpgradeBaseReserve: 4,
 });
 
 // === xdr source ============================================================
@@ -967,6 +1249,8 @@ xdr.enum("LedgerUpgradeType", {
 //       uint32 newBaseFee; // update baseFee
 //   case LEDGER_UPGRADE_MAX_TX_SET_SIZE:
 //       uint32 newMaxTxSetSize; // update maxTxSetSize
+//   case LEDGER_UPGRADE_BASE_RESERVE:
+//       uint32 newBaseReserve; // update baseReserve
 //   };
 //
 // ===========================================================================
@@ -977,11 +1261,13 @@ xdr.union("LedgerUpgrade", {
     ["ledgerUpgradeVersion", "newLedgerVersion"],
     ["ledgerUpgradeBaseFee", "newBaseFee"],
     ["ledgerUpgradeMaxTxSetSize", "newMaxTxSetSize"],
+    ["ledgerUpgradeBaseReserve", "newBaseReserve"],
   ],
   arms: {
     newLedgerVersion: xdr.lookup("Uint32"),
     newBaseFee: xdr.lookup("Uint32"),
     newMaxTxSetSize: xdr.lookup("Uint32"),
+    newBaseReserve: xdr.lookup("Uint32"),
   },
 });
 
@@ -1041,6 +1327,23 @@ xdr.struct("LedgerKeyData", [
 
 // === xdr source ============================================================
 //
+//   struct
+//   	{
+//   	    AccountID debitor;
+//   		AccountID creditor;
+//   		Asset asset;
+//   	
+//   	}
+//
+// ===========================================================================
+xdr.struct("LedgerKeyDirectDebit", [
+  ["debitor", xdr.lookup("AccountId")],
+  ["creditor", xdr.lookup("AccountId")],
+  ["asset", xdr.lookup("Asset")],
+]);
+
+// === xdr source ============================================================
+//
 //   union LedgerKey switch (LedgerEntryType type)
 //   {
 //   case ACCOUNT:
@@ -1069,6 +1372,14 @@ xdr.struct("LedgerKeyData", [
 //           AccountID accountID;
 //           string64 dataName;
 //       } data;
+//   case DIRECT_DEBIT:
+//       struct
+//   	{
+//   	    AccountID debitor;
+//   		AccountID creditor;
+//   		Asset asset;
+//   	
+//   	} directDebit;
 //   };
 //
 // ===========================================================================
@@ -1080,12 +1391,14 @@ xdr.union("LedgerKey", {
     ["trustline", "trustLine"],
     ["offer", "offer"],
     ["datum", "data"],
+    ["directDebit", "directDebit"],
   ],
   arms: {
     account: xdr.lookup("LedgerKeyAccount"),
     trustLine: xdr.lookup("LedgerKeyTrustLine"),
     offer: xdr.lookup("LedgerKeyOffer"),
     data: xdr.lookup("LedgerKeyData"),
+    directDebit: xdr.lookup("LedgerKeyDirectDebit"),
   },
 });
 
@@ -1433,328 +1746,6 @@ xdr.union("TransactionMeta", {
 
 // === xdr source ============================================================
 //
-//   enum ErrorCode
-//   {
-//       ERR_MISC = 0, // Unspecific error
-//       ERR_DATA = 1, // Malformed data
-//       ERR_CONF = 2, // Misconfiguration error
-//       ERR_AUTH = 3, // Authentication failure
-//       ERR_LOAD = 4  // System overloaded
-//   };
-//
-// ===========================================================================
-xdr.enum("ErrorCode", {
-  errMisc: 0,
-  errDatum: 1,
-  errConf: 2,
-  errAuth: 3,
-  errLoad: 4,
-});
-
-// === xdr source ============================================================
-//
-//   struct Error
-//   {
-//       ErrorCode code;
-//       string msg<100>;
-//   };
-//
-// ===========================================================================
-xdr.struct("Error", [
-  ["code", xdr.lookup("ErrorCode")],
-  ["msg", xdr.string(100)],
-]);
-
-// === xdr source ============================================================
-//
-//   struct AuthCert
-//   {
-//       Curve25519Public pubkey;
-//       uint64 expiration;
-//       Signature sig;
-//   };
-//
-// ===========================================================================
-xdr.struct("AuthCert", [
-  ["pubkey", xdr.lookup("Curve25519Public")],
-  ["expiration", xdr.lookup("Uint64")],
-  ["sig", xdr.lookup("Signature")],
-]);
-
-// === xdr source ============================================================
-//
-//   struct Hello
-//   {
-//       uint32 ledgerVersion;
-//       uint32 overlayVersion;
-//       uint32 overlayMinVersion;
-//       Hash networkID;
-//       string versionStr<100>;
-//       int listeningPort;
-//       NodeID peerID;
-//       AuthCert cert;
-//       uint256 nonce;
-//   };
-//
-// ===========================================================================
-xdr.struct("Hello", [
-  ["ledgerVersion", xdr.lookup("Uint32")],
-  ["overlayVersion", xdr.lookup("Uint32")],
-  ["overlayMinVersion", xdr.lookup("Uint32")],
-  ["networkId", xdr.lookup("Hash")],
-  ["versionStr", xdr.string(100)],
-  ["listeningPort", xdr.int()],
-  ["peerId", xdr.lookup("NodeId")],
-  ["cert", xdr.lookup("AuthCert")],
-  ["nonce", xdr.lookup("Uint256")],
-]);
-
-// === xdr source ============================================================
-//
-//   struct Auth
-//   {
-//       // Empty message, just to confirm
-//       // establishment of MAC keys.
-//       int unused;
-//   };
-//
-// ===========================================================================
-xdr.struct("Auth", [
-  ["unused", xdr.int()],
-]);
-
-// === xdr source ============================================================
-//
-//   enum IPAddrType
-//   {
-//       IPv4 = 0,
-//       IPv6 = 1
-//   };
-//
-// ===========================================================================
-xdr.enum("IpAddrType", {
-  iPv4: 0,
-  iPv6: 1,
-});
-
-// === xdr source ============================================================
-//
-//   union switch (IPAddrType type)
-//       {
-//       case IPv4:
-//           opaque ipv4[4];
-//       case IPv6:
-//           opaque ipv6[16];
-//       }
-//
-// ===========================================================================
-xdr.union("PeerAddressIp", {
-  switchOn: xdr.lookup("IpAddrType"),
-  switchName: "type",
-  switches: [
-    ["iPv4", "ipv4"],
-    ["iPv6", "ipv6"],
-  ],
-  arms: {
-    ipv4: xdr.opaque(4),
-    ipv6: xdr.opaque(16),
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct PeerAddress
-//   {
-//       union switch (IPAddrType type)
-//       {
-//       case IPv4:
-//           opaque ipv4[4];
-//       case IPv6:
-//           opaque ipv6[16];
-//       }
-//       ip;
-//       uint32 port;
-//       uint32 numFailures;
-//   };
-//
-// ===========================================================================
-xdr.struct("PeerAddress", [
-  ["ip", xdr.lookup("PeerAddressIp")],
-  ["port", xdr.lookup("Uint32")],
-  ["numFailures", xdr.lookup("Uint32")],
-]);
-
-// === xdr source ============================================================
-//
-//   enum MessageType
-//   {
-//       ERROR_MSG = 0,
-//       AUTH = 2,
-//       DONT_HAVE = 3,
-//   
-//       GET_PEERS = 4, // gets a list of peers this guy knows about
-//       PEERS = 5,
-//   
-//       GET_TX_SET = 6, // gets a particular txset by hash
-//       TX_SET = 7,
-//   
-//       TRANSACTION = 8, // pass on a tx you have heard about
-//   
-//       // SCP
-//       GET_SCP_QUORUMSET = 9,
-//       SCP_QUORUMSET = 10,
-//       SCP_MESSAGE = 11,
-//       GET_SCP_STATE = 12,
-//   
-//       // new messages
-//       HELLO = 13
-//   };
-//
-// ===========================================================================
-xdr.enum("MessageType", {
-  errorMsg: 0,
-  auth: 2,
-  dontHave: 3,
-  getPeer: 4,
-  peer: 5,
-  getTxSet: 6,
-  txSet: 7,
-  transaction: 8,
-  getScpQuorumset: 9,
-  scpQuorumset: 10,
-  scpMessage: 11,
-  getScpState: 12,
-  hello: 13,
-});
-
-// === xdr source ============================================================
-//
-//   struct DontHave
-//   {
-//       MessageType type;
-//       uint256 reqHash;
-//   };
-//
-// ===========================================================================
-xdr.struct("DontHave", [
-  ["type", xdr.lookup("MessageType")],
-  ["reqHash", xdr.lookup("Uint256")],
-]);
-
-// === xdr source ============================================================
-//
-//   union StellarMessage switch (MessageType type)
-//   {
-//   case ERROR_MSG:
-//       Error error;
-//   case HELLO:
-//       Hello hello;
-//   case AUTH:
-//       Auth auth;
-//   case DONT_HAVE:
-//       DontHave dontHave;
-//   case GET_PEERS:
-//       void;
-//   case PEERS:
-//       PeerAddress peers<>;
-//   
-//   case GET_TX_SET:
-//       uint256 txSetHash;
-//   case TX_SET:
-//       TransactionSet txSet;
-//   
-//   case TRANSACTION:
-//       TransactionEnvelope transaction;
-//   
-//   // SCP
-//   case GET_SCP_QUORUMSET:
-//       uint256 qSetHash;
-//   case SCP_QUORUMSET:
-//       SCPQuorumSet qSet;
-//   case SCP_MESSAGE:
-//       SCPEnvelope envelope;
-//   case GET_SCP_STATE:
-//       uint32 getSCPLedgerSeq; // ledger seq requested ; if 0, requests the latest
-//   };
-//
-// ===========================================================================
-xdr.union("StellarMessage", {
-  switchOn: xdr.lookup("MessageType"),
-  switchName: "type",
-  switches: [
-    ["errorMsg", "error"],
-    ["hello", "hello"],
-    ["auth", "auth"],
-    ["dontHave", "dontHave"],
-    ["getPeer", xdr.void()],
-    ["peer", "peers"],
-    ["getTxSet", "txSetHash"],
-    ["txSet", "txSet"],
-    ["transaction", "transaction"],
-    ["getScpQuorumset", "qSetHash"],
-    ["scpQuorumset", "qSet"],
-    ["scpMessage", "envelope"],
-    ["getScpState", "getScpLedgerSeq"],
-  ],
-  arms: {
-    error: xdr.lookup("Error"),
-    hello: xdr.lookup("Hello"),
-    auth: xdr.lookup("Auth"),
-    dontHave: xdr.lookup("DontHave"),
-    peers: xdr.varArray(xdr.lookup("PeerAddress"), 2147483647),
-    txSetHash: xdr.lookup("Uint256"),
-    txSet: xdr.lookup("TransactionSet"),
-    transaction: xdr.lookup("TransactionEnvelope"),
-    qSetHash: xdr.lookup("Uint256"),
-    qSet: xdr.lookup("ScpQuorumSet"),
-    envelope: xdr.lookup("ScpEnvelope"),
-    getScpLedgerSeq: xdr.lookup("Uint32"),
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct
-//   {
-//      uint64 sequence;
-//      StellarMessage message;
-//      HmacSha256Mac mac;
-//       }
-//
-// ===========================================================================
-xdr.struct("AuthenticatedMessageV0", [
-  ["sequence", xdr.lookup("Uint64")],
-  ["message", xdr.lookup("StellarMessage")],
-  ["mac", xdr.lookup("HmacSha256Mac")],
-]);
-
-// === xdr source ============================================================
-//
-//   union AuthenticatedMessage switch (uint32 v)
-//   {
-//   case 0:
-//       struct
-//   {
-//      uint64 sequence;
-//      StellarMessage message;
-//      HmacSha256Mac mac;
-//       } v0;
-//   };
-//
-// ===========================================================================
-xdr.union("AuthenticatedMessage", {
-  switchOn: xdr.lookup("Uint32"),
-  switchName: "v",
-  switches: [
-    [0, "v0"],
-  ],
-  arms: {
-    v0: xdr.lookup("AuthenticatedMessageV0"),
-  },
-});
-
-// === xdr source ============================================================
-//
 //   struct DecoratedSignature
 //   {
 //       SignatureHint hint;  // last 4 bytes of the public key, used as a hint
@@ -1781,7 +1772,9 @@ xdr.struct("DecoratedSignature", [
 //       ALLOW_TRUST = 7,
 //       ACCOUNT_MERGE = 8,
 //       INFLATION = 9,
-//       MANAGE_DATA = 10
+//       MANAGE_DATA = 10,
+//   	MANAGE_DIRECT_DEBIT = 11,
+//   	DIRECT_DEBIT_PAYMENT = 12
 //   };
 //
 // ===========================================================================
@@ -1797,6 +1790,8 @@ xdr.enum("OperationType", {
   accountMerge: 8,
   inflation: 9,
   manageDatum: 10,
+  manageDirectDebit: 11,
+  directDebitPayment: 12,
 });
 
 // === xdr source ============================================================
@@ -2018,6 +2013,38 @@ xdr.struct("ManageDataOp", [
 
 // === xdr source ============================================================
 //
+//   struct ManageDirectDebitOp
+//   {
+//       AccountID debitor; 
+//       Asset asset;           
+//       bool cancelDebit; 
+//   	
+//   
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageDirectDebitOp", [
+  ["debitor", xdr.lookup("AccountId")],
+  ["asset", xdr.lookup("Asset")],
+  ["cancelDebit", xdr.bool()],
+]);
+
+// === xdr source ============================================================
+//
+//   struct DirectDebitPaymentOp
+//   {
+//       AccountID creditor; 
+//       PaymentOp payment;
+//   };
+//
+// ===========================================================================
+xdr.struct("DirectDebitPaymentOp", [
+  ["creditor", xdr.lookup("AccountId")],
+  ["payment", xdr.lookup("PaymentOp")],
+]);
+
+// === xdr source ============================================================
+//
 //   union switch (OperationType type)
 //       {
 //       case CREATE_ACCOUNT:
@@ -2042,6 +2069,10 @@ xdr.struct("ManageDataOp", [
 //           void;
 //       case MANAGE_DATA:
 //           ManageDataOp manageDataOp;
+//   	case MANAGE_DIRECT_DEBIT:
+//   	    ManageDirectDebitOp manageDirectDebitOp;
+//   	case DIRECT_DEBIT_PAYMENT:
+//   	    DirectDebitPaymentOp directDebitPaymentOp;
 //       }
 //
 // ===========================================================================
@@ -2060,6 +2091,8 @@ xdr.union("OperationBody", {
     ["accountMerge", "destination"],
     ["inflation", xdr.void()],
     ["manageDatum", "manageDataOp"],
+    ["manageDirectDebit", "manageDirectDebitOp"],
+    ["directDebitPayment", "directDebitPaymentOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
@@ -2072,6 +2105,8 @@ xdr.union("OperationBody", {
     allowTrustOp: xdr.lookup("AllowTrustOp"),
     destination: xdr.lookup("AccountId"),
     manageDataOp: xdr.lookup("ManageDataOp"),
+    manageDirectDebitOp: xdr.lookup("ManageDirectDebitOp"),
+    directDebitPaymentOp: xdr.lookup("DirectDebitPaymentOp"),
   },
 });
 
@@ -2108,6 +2143,10 @@ xdr.union("OperationBody", {
 //           void;
 //       case MANAGE_DATA:
 //           ManageDataOp manageDataOp;
+//   	case MANAGE_DIRECT_DEBIT:
+//   	    ManageDirectDebitOp manageDirectDebitOp;
+//   	case DIRECT_DEBIT_PAYMENT:
+//   	    DirectDebitPaymentOp directDebitPaymentOp;
 //       }
 //       body;
 //   };
@@ -2334,13 +2373,12 @@ xdr.struct("ClaimOfferAtom", [
 //   enum CreateAccountResultCode
 //   {
 //       // codes considered as "success" for the operation
-//       CREATE_ACCOUNT_SUCCESS = 0, // account was created
+//       CREATE_ACCOUNT_SUCCESS = 0, 
 //   
 //       // codes considered as "failure" for the operation
 //       CREATE_ACCOUNT_MALFORMED = -1,   // invalid destination
 //       CREATE_ACCOUNT_UNDERFUNDED = -2, // not enough funds in source account
-//       CREATE_ACCOUNT_LOW_RESERVE =
-//           -3, // would create an account below the min reserve
+//       CREATE_ACCOUNT_LOW_RESERVE = -3, // would create an account below the min reserve
 //       CREATE_ACCOUNT_ALREADY_EXIST = -4 // account already exists
 //   };
 //
@@ -2810,6 +2848,116 @@ xdr.union("AllowTrustResult", {
 
 // === xdr source ============================================================
 //
+//   enum ManageDirectDebitResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       MANAGE_DIRECT_DEBIT_SUCCESS = 0,
+//       // codes considered as "failure" for the operation
+//       MANAGE_DIRECT_DEBIT_MALFORMED = -1,   
+//   	MANAGE_DIRECT_DEBIT_SELF_NOT_ALLOWED = -2,
+//   	MANAGE_DIRECT_DEBIT_NO_TRUST = -3,
+//   	MANAGE_DIRECT_DEBIT_EXIST = -4,
+//   	MANAGE_DIRECT_DEBIT_NOT_EXIST = -5,
+//   	MANAGE_DIRECT_DEBIT_LOW_RESERVE = -6,
+//   	MANAGE_DIRECT_DEBIT_DEBITOR_NOT_EXIST = -7
+//   	                                 
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageDirectDebitResultCode", {
+  manageDirectDebitSuccess: 0,
+  manageDirectDebitMalformed: -1,
+  manageDirectDebitSelfNotAllowed: -2,
+  manageDirectDebitNoTrust: -3,
+  manageDirectDebitExist: -4,
+  manageDirectDebitNotExist: -5,
+  manageDirectDebitLowReserve: -6,
+  manageDirectDebitDebitorNotExist: -7,
+});
+
+// === xdr source ============================================================
+//
+//   union ManageDirectDebitResult switch (ManageDirectDebitResultCode code)
+//   {
+//   case MANAGE_DIRECT_DEBIT_SUCCESS:
+//       void;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("ManageDirectDebitResult", {
+  switchOn: xdr.lookup("ManageDirectDebitResultCode"),
+  switchName: "code",
+  switches: [
+    ["manageDirectDebitSuccess", xdr.void()],
+  ],
+  arms: {
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   enum DirectDebitPaymentResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       DIRECT_DEBIT_PAYMENT_SUCCESS = 0,
+//       // codes considered as "failure" for the operation
+//   	DIRECT_DEBIT_PAYMENT_MALFORMED = -1,          // bad input
+//       DIRECT_DEBIT_PAYMENT_UNDERFUNDED = -2,        // not enough funds in source account
+//       DIRECT_DEBIT_PAYMENT_SRC_NO_TRUST = -3,       // no trust line on source account
+//       DIRECT_DEBIT_PAYMENT_SRC_NOT_AUTHORIZED = -4, // source not authorized to transfer
+//       DIRECT_DEBIT_PAYMENT_NO_DESTINATION = -5,     // destination account does not exist
+//       DIRECT_DEBIT_PAYMENT_NO_TRUST = -6,       // destination missing a trust line for asset
+//       DIRECT_DEBIT_PAYMENT_NOT_AUTHORIZED = -7, // destination not authorized to hold asset
+//       DIRECT_DEBIT_PAYMENT_LINE_FULL = -8,      // destination would go above their limit
+//       DIRECT_DEBIT_PAYMENT_NO_ISSUER = -9,       // missing issuer on asset   
+//   	DIRECT_DEBIT_PAYMENT_NOT_ALLOWED = -10,
+//   	DIRECT_DEBIT_PAYMENT_ACCOUNT_NOT_EXIST = -11
+//   	                                 
+//   };
+//
+// ===========================================================================
+xdr.enum("DirectDebitPaymentResultCode", {
+  directDebitPaymentSuccess: 0,
+  directDebitPaymentMalformed: -1,
+  directDebitPaymentUnderfunded: -2,
+  directDebitPaymentSrcNoTrust: -3,
+  directDebitPaymentSrcNotAuthorized: -4,
+  directDebitPaymentNoDestination: -5,
+  directDebitPaymentNoTrust: -6,
+  directDebitPaymentNotAuthorized: -7,
+  directDebitPaymentLineFull: -8,
+  directDebitPaymentNoIssuer: -9,
+  directDebitPaymentNotAllowed: -10,
+  directDebitPaymentAccountNotExist: -11,
+});
+
+// === xdr source ============================================================
+//
+//   union DirectDebitPaymentResult switch (DirectDebitPaymentResultCode code)
+//   {
+//   case DIRECT_DEBIT_PAYMENT_SUCCESS:
+//       void;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("DirectDebitPaymentResult", {
+  switchOn: xdr.lookup("DirectDebitPaymentResultCode"),
+  switchName: "code",
+  switches: [
+    ["directDebitPaymentSuccess", xdr.void()],
+  ],
+  arms: {
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   enum AccountMergeResultCode
 //   {
 //       // codes considered as "success" for the operation
@@ -2993,6 +3141,10 @@ xdr.enum("OperationResultCode", {
 //           InflationResult inflationResult;
 //       case MANAGE_DATA:
 //           ManageDataResult manageDataResult;
+//   	case MANAGE_DIRECT_DEBIT:
+//   	    ManageDirectDebitResult manageDirectDebitResult;
+//   	case DIRECT_DEBIT_PAYMENT:
+//   	    DirectDebitPaymentResult directDebitPaymentResult;
 //       }
 //
 // ===========================================================================
@@ -3011,6 +3163,8 @@ xdr.union("OperationResultTr", {
     ["accountMerge", "accountMergeResult"],
     ["inflation", "inflationResult"],
     ["manageDatum", "manageDataResult"],
+    ["manageDirectDebit", "manageDirectDebitResult"],
+    ["directDebitPayment", "directDebitPaymentResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
@@ -3024,6 +3178,8 @@ xdr.union("OperationResultTr", {
     accountMergeResult: xdr.lookup("AccountMergeResult"),
     inflationResult: xdr.lookup("InflationResult"),
     manageDataResult: xdr.lookup("ManageDataResult"),
+    manageDirectDebitResult: xdr.lookup("ManageDirectDebitResult"),
+    directDebitPaymentResult: xdr.lookup("DirectDebitPaymentResult"),
   },
 });
 
@@ -3056,6 +3212,10 @@ xdr.union("OperationResultTr", {
 //           InflationResult inflationResult;
 //       case MANAGE_DATA:
 //           ManageDataResult manageDataResult;
+//   	case MANAGE_DIRECT_DEBIT:
+//   	    ManageDirectDebitResult manageDirectDebitResult;
+//   	case DIRECT_DEBIT_PAYMENT:
+//   	    DirectDebitPaymentResult directDebitPaymentResult;
 //       }
 //       tr;
 //   default:
@@ -3190,208 +3350,325 @@ xdr.struct("TransactionResult", [
 
 // === xdr source ============================================================
 //
-//   typedef opaque Hash[32];
-//
-// ===========================================================================
-xdr.typedef("Hash", xdr.opaque(32));
-
-// === xdr source ============================================================
-//
-//   typedef opaque uint256[32];
-//
-// ===========================================================================
-xdr.typedef("Uint256", xdr.opaque(32));
-
-// === xdr source ============================================================
-//
-//   typedef unsigned int uint32;
-//
-// ===========================================================================
-xdr.typedef("Uint32", xdr.uint());
-
-// === xdr source ============================================================
-//
-//   typedef int int32;
-//
-// ===========================================================================
-xdr.typedef("Int32", xdr.int());
-
-// === xdr source ============================================================
-//
-//   typedef unsigned hyper uint64;
-//
-// ===========================================================================
-xdr.typedef("Uint64", xdr.uhyper());
-
-// === xdr source ============================================================
-//
-//   typedef hyper int64;
-//
-// ===========================================================================
-xdr.typedef("Int64", xdr.hyper());
-
-// === xdr source ============================================================
-//
-//   enum CryptoKeyType
+//   enum ErrorCode
 //   {
-//       KEY_TYPE_ED25519 = 0,
-//       KEY_TYPE_PRE_AUTH_TX = 1,
-//       KEY_TYPE_HASH_X = 2
+//       ERR_MISC = 0, // Unspecific error
+//       ERR_DATA = 1, // Malformed data
+//       ERR_CONF = 2, // Misconfiguration error
+//       ERR_AUTH = 3, // Authentication failure
+//       ERR_LOAD = 4  // System overloaded
 //   };
 //
 // ===========================================================================
-xdr.enum("CryptoKeyType", {
-  keyTypeEd25519: 0,
-  keyTypePreAuthTx: 1,
-  keyTypeHashX: 2,
+xdr.enum("ErrorCode", {
+  errMisc: 0,
+  errDatum: 1,
+  errConf: 2,
+  errAuth: 3,
+  errLoad: 4,
 });
 
 // === xdr source ============================================================
 //
-//   enum PublicKeyType
+//   struct Error
 //   {
-//       PUBLIC_KEY_TYPE_ED25519 = KEY_TYPE_ED25519
+//       ErrorCode code;
+//       string msg<100>;
 //   };
 //
 // ===========================================================================
-xdr.enum("PublicKeyType", {
-  publicKeyTypeEd25519: 0,
+xdr.struct("Error", [
+  ["code", xdr.lookup("ErrorCode")],
+  ["msg", xdr.string(100)],
+]);
+
+// === xdr source ============================================================
+//
+//   struct AuthCert
+//   {
+//       Curve25519Public pubkey;
+//       uint64 expiration;
+//       Signature sig;
+//   };
+//
+// ===========================================================================
+xdr.struct("AuthCert", [
+  ["pubkey", xdr.lookup("Curve25519Public")],
+  ["expiration", xdr.lookup("Uint64")],
+  ["sig", xdr.lookup("Signature")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct Hello
+//   {
+//       uint32 ledgerVersion;
+//       uint32 overlayVersion;
+//       uint32 overlayMinVersion;
+//       Hash networkID;
+//       string versionStr<100>;
+//       int listeningPort;
+//       NodeID peerID;
+//       AuthCert cert;
+//       uint256 nonce;
+//   };
+//
+// ===========================================================================
+xdr.struct("Hello", [
+  ["ledgerVersion", xdr.lookup("Uint32")],
+  ["overlayVersion", xdr.lookup("Uint32")],
+  ["overlayMinVersion", xdr.lookup("Uint32")],
+  ["networkId", xdr.lookup("Hash")],
+  ["versionStr", xdr.string(100)],
+  ["listeningPort", xdr.int()],
+  ["peerId", xdr.lookup("NodeId")],
+  ["cert", xdr.lookup("AuthCert")],
+  ["nonce", xdr.lookup("Uint256")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct Auth
+//   {
+//       // Empty message, just to confirm
+//       // establishment of MAC keys.
+//       int unused;
+//   };
+//
+// ===========================================================================
+xdr.struct("Auth", [
+  ["unused", xdr.int()],
+]);
+
+// === xdr source ============================================================
+//
+//   enum IPAddrType
+//   {
+//       IPv4 = 0,
+//       IPv6 = 1
+//   };
+//
+// ===========================================================================
+xdr.enum("IpAddrType", {
+  iPv4: 0,
+  iPv6: 1,
 });
 
 // === xdr source ============================================================
 //
-//   enum SignerKeyType
-//   {
-//       SIGNER_KEY_TYPE_ED25519 = KEY_TYPE_ED25519,
-//       SIGNER_KEY_TYPE_PRE_AUTH_TX = KEY_TYPE_PRE_AUTH_TX,
-//       SIGNER_KEY_TYPE_HASH_X = KEY_TYPE_HASH_X
-//   };
+//   union switch (IPAddrType type)
+//       {
+//       case IPv4:
+//           opaque ipv4[4];
+//       case IPv6:
+//           opaque ipv6[16];
+//       }
 //
 // ===========================================================================
-xdr.enum("SignerKeyType", {
-  signerKeyTypeEd25519: 0,
-  signerKeyTypePreAuthTx: 1,
-  signerKeyTypeHashX: 2,
-});
-
-// === xdr source ============================================================
-//
-//   union PublicKey switch (PublicKeyType type)
-//   {
-//   case PUBLIC_KEY_TYPE_ED25519:
-//       uint256 ed25519;
-//   };
-//
-// ===========================================================================
-xdr.union("PublicKey", {
-  switchOn: xdr.lookup("PublicKeyType"),
+xdr.union("PeerAddressIp", {
+  switchOn: xdr.lookup("IpAddrType"),
   switchName: "type",
   switches: [
-    ["publicKeyTypeEd25519", "ed25519"],
+    ["iPv4", "ipv4"],
+    ["iPv6", "ipv6"],
   ],
   arms: {
-    ed25519: xdr.lookup("Uint256"),
+    ipv4: xdr.opaque(4),
+    ipv6: xdr.opaque(16),
   },
 });
 
 // === xdr source ============================================================
 //
-//   union SignerKey switch (SignerKeyType type)
+//   struct PeerAddress
 //   {
-//   case SIGNER_KEY_TYPE_ED25519:
-//       uint256 ed25519;
-//   case SIGNER_KEY_TYPE_PRE_AUTH_TX:
-//       /* Hash of Transaction structure */
-//       uint256 preAuthTx;
-//   case SIGNER_KEY_TYPE_HASH_X:
-//       /* Hash of random 256 bit preimage X */
-//       uint256 hashX;
+//       union switch (IPAddrType type)
+//       {
+//       case IPv4:
+//           opaque ipv4[4];
+//       case IPv6:
+//           opaque ipv6[16];
+//       }
+//       ip;
+//       uint32 port;
+//       uint32 numFailures;
 //   };
 //
 // ===========================================================================
-xdr.union("SignerKey", {
-  switchOn: xdr.lookup("SignerKeyType"),
+xdr.struct("PeerAddress", [
+  ["ip", xdr.lookup("PeerAddressIp")],
+  ["port", xdr.lookup("Uint32")],
+  ["numFailures", xdr.lookup("Uint32")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum MessageType
+//   {
+//       ERROR_MSG = 0,
+//       AUTH = 2,
+//       DONT_HAVE = 3,
+//   
+//       GET_PEERS = 4, // gets a list of peers this guy knows about
+//       PEERS = 5,
+//   
+//       GET_TX_SET = 6, // gets a particular txset by hash
+//       TX_SET = 7,
+//   
+//       TRANSACTION = 8, // pass on a tx you have heard about
+//   
+//       // SCP
+//       GET_SCP_QUORUMSET = 9,
+//       SCP_QUORUMSET = 10,
+//       SCP_MESSAGE = 11,
+//       GET_SCP_STATE = 12,
+//   
+//       // new messages
+//       HELLO = 13
+//   };
+//
+// ===========================================================================
+xdr.enum("MessageType", {
+  errorMsg: 0,
+  auth: 2,
+  dontHave: 3,
+  getPeer: 4,
+  peer: 5,
+  getTxSet: 6,
+  txSet: 7,
+  transaction: 8,
+  getScpQuorumset: 9,
+  scpQuorumset: 10,
+  scpMessage: 11,
+  getScpState: 12,
+  hello: 13,
+});
+
+// === xdr source ============================================================
+//
+//   struct DontHave
+//   {
+//       MessageType type;
+//       uint256 reqHash;
+//   };
+//
+// ===========================================================================
+xdr.struct("DontHave", [
+  ["type", xdr.lookup("MessageType")],
+  ["reqHash", xdr.lookup("Uint256")],
+]);
+
+// === xdr source ============================================================
+//
+//   union StellarMessage switch (MessageType type)
+//   {
+//   case ERROR_MSG:
+//       Error error;
+//   case HELLO:
+//       Hello hello;
+//   case AUTH:
+//       Auth auth;
+//   case DONT_HAVE:
+//       DontHave dontHave;
+//   case GET_PEERS:
+//       void;
+//   case PEERS:
+//       PeerAddress peers<>;
+//   
+//   case GET_TX_SET:
+//       uint256 txSetHash;
+//   case TX_SET:
+//       TransactionSet txSet;
+//   
+//   case TRANSACTION:
+//       TransactionEnvelope transaction;
+//   
+//   // SCP
+//   case GET_SCP_QUORUMSET:
+//       uint256 qSetHash;
+//   case SCP_QUORUMSET:
+//       SCPQuorumSet qSet;
+//   case SCP_MESSAGE:
+//       SCPEnvelope envelope;
+//   case GET_SCP_STATE:
+//       uint32 getSCPLedgerSeq; // ledger seq requested ; if 0, requests the latest
+//   };
+//
+// ===========================================================================
+xdr.union("StellarMessage", {
+  switchOn: xdr.lookup("MessageType"),
   switchName: "type",
   switches: [
-    ["signerKeyTypeEd25519", "ed25519"],
-    ["signerKeyTypePreAuthTx", "preAuthTx"],
-    ["signerKeyTypeHashX", "hashX"],
+    ["errorMsg", "error"],
+    ["hello", "hello"],
+    ["auth", "auth"],
+    ["dontHave", "dontHave"],
+    ["getPeer", xdr.void()],
+    ["peer", "peers"],
+    ["getTxSet", "txSetHash"],
+    ["txSet", "txSet"],
+    ["transaction", "transaction"],
+    ["getScpQuorumset", "qSetHash"],
+    ["scpQuorumset", "qSet"],
+    ["scpMessage", "envelope"],
+    ["getScpState", "getScpLedgerSeq"],
   ],
   arms: {
-    ed25519: xdr.lookup("Uint256"),
-    preAuthTx: xdr.lookup("Uint256"),
-    hashX: xdr.lookup("Uint256"),
+    error: xdr.lookup("Error"),
+    hello: xdr.lookup("Hello"),
+    auth: xdr.lookup("Auth"),
+    dontHave: xdr.lookup("DontHave"),
+    peers: xdr.varArray(xdr.lookup("PeerAddress"), 2147483647),
+    txSetHash: xdr.lookup("Uint256"),
+    txSet: xdr.lookup("TransactionSet"),
+    transaction: xdr.lookup("TransactionEnvelope"),
+    qSetHash: xdr.lookup("Uint256"),
+    qSet: xdr.lookup("ScpQuorumSet"),
+    envelope: xdr.lookup("ScpEnvelope"),
+    getScpLedgerSeq: xdr.lookup("Uint32"),
   },
 });
 
 // === xdr source ============================================================
 //
-//   typedef opaque Signature<64>;
-//
-// ===========================================================================
-xdr.typedef("Signature", xdr.varOpaque(64));
-
-// === xdr source ============================================================
-//
-//   typedef opaque SignatureHint[4];
-//
-// ===========================================================================
-xdr.typedef("SignatureHint", xdr.opaque(4));
-
-// === xdr source ============================================================
-//
-//   typedef PublicKey NodeID;
-//
-// ===========================================================================
-xdr.typedef("NodeId", xdr.lookup("PublicKey"));
-
-// === xdr source ============================================================
-//
-//   struct Curve25519Secret
+//   struct
 //   {
-//           opaque key[32];
-//   };
+//      uint64 sequence;
+//      StellarMessage message;
+//      HmacSha256Mac mac;
+//       }
 //
 // ===========================================================================
-xdr.struct("Curve25519Secret", [
-  ["key", xdr.opaque(32)],
+xdr.struct("AuthenticatedMessageV0", [
+  ["sequence", xdr.lookup("Uint64")],
+  ["message", xdr.lookup("StellarMessage")],
+  ["mac", xdr.lookup("HmacSha256Mac")],
 ]);
 
 // === xdr source ============================================================
 //
-//   struct Curve25519Public
+//   union AuthenticatedMessage switch (uint32 v)
 //   {
-//           opaque key[32];
+//   case 0:
+//       struct
+//   {
+//      uint64 sequence;
+//      StellarMessage message;
+//      HmacSha256Mac mac;
+//       } v0;
 //   };
 //
 // ===========================================================================
-xdr.struct("Curve25519Public", [
-  ["key", xdr.opaque(32)],
-]);
-
-// === xdr source ============================================================
-//
-//   struct HmacSha256Key
-//   {
-//           opaque key[32];
-//   };
-//
-// ===========================================================================
-xdr.struct("HmacSha256Key", [
-  ["key", xdr.opaque(32)],
-]);
-
-// === xdr source ============================================================
-//
-//   struct HmacSha256Mac
-//   {
-//           opaque mac[32];
-//   };
-//
-// ===========================================================================
-xdr.struct("HmacSha256Mac", [
-  ["mac", xdr.opaque(32)],
-]);
+xdr.union("AuthenticatedMessage", {
+  switchOn: xdr.lookup("Uint32"),
+  switchName: "v",
+  switches: [
+    [0, "v0"],
+  ],
+  arms: {
+    v0: xdr.lookup("AuthenticatedMessageV0"),
+  },
+});
 
 });
 export default types;

@@ -25,7 +25,9 @@ enum OperationType
     ALLOW_TRUST = 7,
     ACCOUNT_MERGE = 8,
     INFLATION = 9,
-    MANAGE_DATA = 10
+    MANAGE_DATA = 10,
+	MANAGE_DIRECT_DEBIT = 11,
+	DIRECT_DEBIT_PAYMENT = 12
 };
 
 /* CreateAccount
@@ -220,6 +222,35 @@ struct ManageDataOp
     string64 dataName; 
     DataValue* dataValue;   // set to null to clear
 };
+/* ManageDirectDebit
+
+    
+
+    Threshold: med
+
+    Result: ManageDirectDebitResult
+*/
+struct ManageDirectDebitOp
+{
+    AccountID debitor; 
+    Asset asset;           
+    bool cancelDebit; 
+	
+
+};
+/* DirectDebitPayment
+
+
+
+    Threshold: med
+
+    Result: DirectDebitPaymentResult
+*/
+struct DirectDebitPaymentOp
+{
+    AccountID creditor; 
+    PaymentOp payment;
+};
 
 /* An operation is the lowest unit of work that a transaction does */
 struct Operation
@@ -253,6 +284,10 @@ struct Operation
         void;
     case MANAGE_DATA:
         ManageDataOp manageDataOp;
+	case MANAGE_DIRECT_DEBIT:
+	    ManageDirectDebitOp manageDirectDebitOp;
+	case DIRECT_DEBIT_PAYMENT:
+	    DirectDebitPaymentOp directDebitPaymentOp;
     }
     body;
 };
@@ -364,13 +399,12 @@ struct ClaimOfferAtom
 enum CreateAccountResultCode
 {
     // codes considered as "success" for the operation
-    CREATE_ACCOUNT_SUCCESS = 0, // account was created
+    CREATE_ACCOUNT_SUCCESS = 0, 
 
     // codes considered as "failure" for the operation
     CREATE_ACCOUNT_MALFORMED = -1,   // invalid destination
     CREATE_ACCOUNT_UNDERFUNDED = -2, // not enough funds in source account
-    CREATE_ACCOUNT_LOW_RESERVE =
-        -3, // would create an account below the min reserve
+    CREATE_ACCOUNT_LOW_RESERVE = -3, // would create an account below the min reserve
     CREATE_ACCOUNT_ALREADY_EXIST = -4 // account already exists
 };
 
@@ -579,6 +613,57 @@ case ALLOW_TRUST_SUCCESS:
 default:
     void;
 };
+/******* ManageDirectDebit Result********/
+
+enum ManageDirectDebitResultCode
+{
+    // codes considered as "success" for the operation
+    MANAGE_DIRECT_DEBIT_SUCCESS = 0,
+    // codes considered as "failure" for the operation
+    MANAGE_DIRECT_DEBIT_MALFORMED = -1,   
+	MANAGE_DIRECT_DEBIT_SELF_NOT_ALLOWED = -2,
+	MANAGE_DIRECT_DEBIT_NO_TRUST = -3,
+	MANAGE_DIRECT_DEBIT_EXIST = -4,
+	MANAGE_DIRECT_DEBIT_NOT_EXIST = -5,
+	MANAGE_DIRECT_DEBIT_LOW_RESERVE = -6,
+	MANAGE_DIRECT_DEBIT_DEBITOR_NOT_EXIST = -7
+	                                 
+};
+
+union ManageDirectDebitResult switch (ManageDirectDebitResultCode code)
+{
+case MANAGE_DIRECT_DEBIT_SUCCESS:
+    void;
+default:
+    void;
+};
+/******* DirectDebitPayment Result********/
+enum DirectDebitPaymentResultCode
+{
+    // codes considered as "success" for the operation
+    DIRECT_DEBIT_PAYMENT_SUCCESS = 0,
+    // codes considered as "failure" for the operation
+	DIRECT_DEBIT_PAYMENT_MALFORMED = -1,          // bad input
+    DIRECT_DEBIT_PAYMENT_UNDERFUNDED = -2,        // not enough funds in source account
+    DIRECT_DEBIT_PAYMENT_SRC_NO_TRUST = -3,       // no trust line on source account
+    DIRECT_DEBIT_PAYMENT_SRC_NOT_AUTHORIZED = -4, // source not authorized to transfer
+    DIRECT_DEBIT_PAYMENT_NO_DESTINATION = -5,     // destination account does not exist
+    DIRECT_DEBIT_PAYMENT_NO_TRUST = -6,       // destination missing a trust line for asset
+    DIRECT_DEBIT_PAYMENT_NOT_AUTHORIZED = -7, // destination not authorized to hold asset
+    DIRECT_DEBIT_PAYMENT_LINE_FULL = -8,      // destination would go above their limit
+    DIRECT_DEBIT_PAYMENT_NO_ISSUER = -9,       // missing issuer on asset   
+	DIRECT_DEBIT_PAYMENT_NOT_ALLOWED = -10,
+	DIRECT_DEBIT_PAYMENT_ACCOUNT_NOT_EXIST = -11
+	                                 
+};
+
+union DirectDebitPaymentResult switch (DirectDebitPaymentResultCode code)
+{
+case DIRECT_DEBIT_PAYMENT_SUCCESS:
+    void;
+default:
+    void;
+};
 
 /******* AccountMerge Result ********/
 
@@ -683,6 +768,10 @@ case opINNER:
         InflationResult inflationResult;
     case MANAGE_DATA:
         ManageDataResult manageDataResult;
+	case MANAGE_DIRECT_DEBIT:
+	    ManageDirectDebitResult manageDirectDebitResult;
+	case DIRECT_DEBIT_PAYMENT:
+	    DirectDebitPaymentResult directDebitPaymentResult;
     }
     tr;
 default:
