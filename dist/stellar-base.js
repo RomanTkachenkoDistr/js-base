@@ -30679,6 +30679,56 @@ var StellarBase =
 
 	      return new _generatedStellarXdr_generated2["default"].Operation(opAttributes);
 	    }
+	  }, {
+	    key: "allowDebit",
+	    value: function allowDebit(opts) {
+	      if (!_strkey.StrKey.isValidEd25519PublicKey(opts.destination)) {
+	        throw new Error("debitor is invalid");
+	      }
+	      if (!opts.asset) {
+	        throw new Error("asset is invalid");
+	      }
+	      if (!opts.cancelDebit) {
+	        throw new Error("set flag of delete or create");
+	      }
+	      var attributes = {};
+	      attributes.destination = _keypair.Keypair.fromPublicKey(opts.destination).xdrAccountId();
+	      attributes.asset = opts.asset.toXDR();
+	      attributes.cancelDebit = opts.cancelDebit;
+	      var manageDebitOP = new _generatedStellarXdr_generated2["default"].manageDirectDebitOp(attributes);
+	      var opAttributes = {};
+	      opAttributes.body = _generatedStellarXdr_generated2["default"].OperationBody.manageDirectDebit(manageDebitOP);
+	      this.setSourceAccount(opAttributes, opts);
+	      return new _generatedStellarXdr_generated2["default"].Operation(opAttributes);
+	    }
+	  }, {
+	    key: "debitPayment",
+	    value: function debitPayment(opts) {
+	      if (!opts.asset) {
+	        throw new Error("asset is invalid");
+	      }
+	      if (!opts.amount) {
+	        throw new Error("amount is invalid");
+	      }
+	      if (!_strkey.StrKey.isValidEd25519PublicKey(opts.creditor)) {
+	        throw new Error("creditor is invalid");
+	      }
+	      if (!_strkey.StrKey.isValidEd25519PublicKey(opts.destination)) {
+	        throw new Error("destination is invalid");
+	      }
+	      var attributes = {};
+	      attributes.creditor = _keypair.Keypair.fromPublicKey(opts.creditor);
+	      attributes.PaymentOp.destination = _keypair.Keypair.fromPublicKey(opts.destination).xdrAccountId();
+	      attributes.PaymentOp.asset = opts.asset.toXDRObject();
+	      attributes.PaymentOp.amount = this._toXDRAmount(opts.amount);
+	      var debitPayment = new _generatedStellarXdr_generated2["default"].directDebitPaymentOp(attributes);
+
+	      var opAttributes = {};
+	      opAttributes.body = _generatedStellarXdr_generated2["default"].OperationBody.directDebitPayment(debitPayment);
+	      this.setSourceAccount(opAttributes, opts);
+
+	      return new _generatedStellarXdr_generated2["default"].Operation(opAttributes);
+	    }
 
 	    /**
 	     * Returns an XDR SetOptionsOp. A "set options" operations set or clear account flags,
@@ -31078,6 +31128,12 @@ var StellarBase =
 	          break;
 	        case "inflation":
 	          result.type = "inflation";
+	          break;
+	        case "manageDirectDebit":
+	          result.type = "manageDirectDebit";
+	          break;
+	        case "directDebitPayment":
+	          result.type = "directDebitPayment";
 	          break;
 	        default:
 	          throw new Error("Unknown operation");
