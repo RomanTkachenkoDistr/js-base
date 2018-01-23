@@ -248,12 +248,9 @@ export class Operation {
     if(!opts.asset){
       throw new Error("asset is invalid");
     }
-    if (!opts.cancelDebit){
-      throw new Error("set flag of delete or create");
-    }
     let attributes = {};
     attributes.destination = Keypair.fromPublicKey(opts.destination).xdrAccountId();
-    attributes.asset = opts.asset.toXDR();
+    attributes.asset = opts.asset.toXDRObject();
     attributes.cancelDebit = opts.cancelDebit;
     let manageDebitOP = new xdr.manageDirectDebitOp(attributes);
     let opAttributes = {};
@@ -675,9 +672,12 @@ export class Operation {
       break;
       case "manageDirectDebit":
         result.type = "manageDirectDebit";
+        result.destination = accountIdtoAddress(attrs);
+        result.asset = Asset.fromOperation(attrs.asset());
       break;
       case "directDebitPayment":
         result.type = "directDebitPayment";
+
         break;
       default:
       throw new Error("Unknown operation");

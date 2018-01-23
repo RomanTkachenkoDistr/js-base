@@ -30688,12 +30688,9 @@ var StellarBase =
 	      if (!opts.asset) {
 	        throw new Error("asset is invalid");
 	      }
-	      if (!opts.cancelDebit) {
-	        throw new Error("set flag of delete or create");
-	      }
 	      var attributes = {};
 	      attributes.destination = _keypair.Keypair.fromPublicKey(opts.destination).xdrAccountId();
-	      attributes.asset = opts.asset.toXDR();
+	      attributes.asset = opts.asset.toXDRObject();
 	      attributes.cancelDebit = opts.cancelDebit;
 	      var manageDebitOP = new _generatedStellarXdr_generated2["default"].manageDirectDebitOp(attributes);
 	      var opAttributes = {};
@@ -31131,9 +31128,12 @@ var StellarBase =
 	          break;
 	        case "manageDirectDebit":
 	          result.type = "manageDirectDebit";
+	          result.destination = accountIdtoAddress(attrs);
+	          result.asset = _asset.Asset.fromOperation(attrs.asset());
 	          break;
 	        case "directDebitPayment":
 	          result.type = "directDebitPayment";
+
 	          break;
 	        default:
 	          throw new Error("Unknown operation");
