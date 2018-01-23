@@ -30680,8 +30680,8 @@ var StellarBase =
 	      return new _generatedStellarXdr_generated2["default"].Operation(opAttributes);
 	    }
 	  }, {
-	    key: "allowDebit",
-	    value: function allowDebit(opts) {
+	    key: "manageDebit",
+	    value: function manageDebit(opts) {
 	      if (!_strkey.StrKey.isValidEd25519PublicKey(opts.debitor)) {
 	        throw new Error("debitor is invalid");
 	      }
@@ -30714,12 +30714,16 @@ var StellarBase =
 	        throw new Error("destination is invalid");
 	      }
 	      var attributes = {};
-	      attributes.creditor = _keypair.Keypair.fromPublicKey(opts.creditor);
-	      attributes.PaymentOp.destination = _keypair.Keypair.fromPublicKey(opts.destination).xdrAccountId();
-	      attributes.PaymentOp.asset = opts.asset.toXDRObject();
-	      attributes.PaymentOp.amount = this._toXDRAmount(opts.amount);
-	      var debitPayment = new _generatedStellarXdr_generated2["default"].directDebitPaymentOp(attributes);
 
+	      attributes.creditor = _keypair.Keypair.fromPublicKey(opts.creditor).xdrAccountId();
+
+	      var paymentOP = {};
+	      paymentOP.destination = _keypair.Keypair.fromPublicKey(opts.destination).xdrAccountId();
+	      paymentOP.asset = opts.asset.toXDRObject();
+	      paymentOP.amount = this._toXDRAmount(opts.amount);
+	      var payment = new _generatedStellarXdr_generated2["default"].PaymentOp(paymentOP);
+	      attributes.payment = payment;
+	      var debitPayment = new _generatedStellarXdr_generated2["default"].DirectDebitPaymentOp(attributes);
 	      var opAttributes = {};
 	      opAttributes.body = _generatedStellarXdr_generated2["default"].OperationBody.directDebitPayment(debitPayment);
 	      this.setSourceAccount(opAttributes, opts);
@@ -31134,7 +31138,12 @@ var StellarBase =
 	          break;
 	        case "directDebitPayment":
 	          result.type = "directDebitPayment";
-
+	          result.creditor = accountIdtoAddress(attrs.creditor());
+	          var payment = {};
+	          payment.amount = this._fromXDRAmount(attrs.payment().amount());
+	          payment.destination = accountIdtoAddress(attrs.payment().destination());
+	          payment.asset = _asset.Asset.fromOperation(attrs.payment().asset());
+	          result.payment = payment;
 	          break;
 	        default:
 	          throw new Error("Unknown operation");

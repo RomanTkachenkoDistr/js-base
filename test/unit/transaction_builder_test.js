@@ -177,7 +177,7 @@ describe('TransactionBuilder', function() {
         it("create debit",function(done){
             let source = new StellarBase.Account("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", "0");
             let tx = new StellarBase.TransactionBuilder(source)
-                .addOperation(StellarBase.Operation.allowDebit({
+                .addOperation(StellarBase.Operation.manageDebit({
                     debitor: "GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2",
                     asset: StellarBase.Asset.native(),
                     cancelDebit:false,
@@ -186,6 +186,24 @@ describe('TransactionBuilder', function() {
             expect(tx.source).to.be.equal(source.accountId());
             expect(tx.operations[0].type).to.be.equal("manageDirectDebit");
             expect(tx.operations[0].debitor).to.be.equal("GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2");
+            done();
+        });
+        it("debit payment",function(done){
+            let source = new StellarBase.Account("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", "0");
+            let tx = new StellarBase.TransactionBuilder(source)
+                .addOperation(StellarBase.Operation.debitPayment({
+                    creditor:"GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2",
+                    asset: StellarBase.Asset.native(),
+                    amount:"777",
+                    destination:"GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
+                }))
+                .build();
+            expect(tx.source).to.be.equal(source.accountId());
+            expect(tx.operations[0].type).to.be.equal("directDebitPayment");
+            expect(tx.operations[0].creditor).to.be.equal("GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2");
+            expect(tx.operations[0].payment.amount).to.be.equal("777");
+            expect(tx.operations[0].payment.destination).to.be.equal("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ");
+
             done();
         })
     })

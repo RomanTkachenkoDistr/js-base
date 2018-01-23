@@ -241,7 +241,7 @@ export class Operation {
 
     return new xdr.Operation(opAttributes);
   }
-  static allowDebit(opts){
+  static manageDebit(opts){
     if (!StrKey.isValidEd25519PublicKey(opts.debitor)){
       throw new Error("debitor is invalid");
     }
@@ -273,12 +273,16 @@ export class Operation {
           throw new Error("destination is invalid");
       }
       let attributes = {};
-      attributes.creditor               = Keypair.fromPublicKey(opts.creditor);
-      attributes.PaymentOp.destination  = Keypair.fromPublicKey(opts.destination).xdrAccountId();
-      attributes.PaymentOp.asset        = opts.asset.toXDRObject();
-      attributes.PaymentOp.amount       = this._toXDRAmount(opts.amount);
-      let debitPayment             = new xdr.directDebitPaymentOp(attributes);
 
+      attributes.creditor=Keypair.fromPublicKey(opts.creditor).xdrAccountId();
+
+      let paymentOP= {};
+      paymentOP.destination= Keypair.fromPublicKey(opts.destination).xdrAccountId();
+      paymentOP.asset= opts.asset.toXDRObject();
+      paymentOP.amount= this._toXDRAmount(opts.amount);
+      let payment = new xdr.PaymentOp(paymentOP);
+      attributes.payment = payment;
+      let debitPayment = new xdr.DirectDebitPaymentOp(attributes);
       let opAttributes = {};
       opAttributes.body = xdr.OperationBody.directDebitPayment(debitPayment);
       this.setSourceAccount(opAttributes, opts);
@@ -678,7 +682,12 @@ export class Operation {
       break;
       case "directDebitPayment":
         result.type = "directDebitPayment";
-
+        result.creditor = accountIdtoAddress(attrs.creditor());
+        let payment = {};
+        payment.amount = this._fromXDRAmount(attrs.payment().amount());
+        payment.destination = accountIdtoAddress(attrs.payment().destination());
+        payment.asset = Asset.fromOperation(attrs.payment().asset());
+        result.payment = payment;
         break;
       default:
       throw new Error("Unknown operation");
