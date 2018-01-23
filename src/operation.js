@@ -242,14 +242,14 @@ export class Operation {
     return new xdr.Operation(opAttributes);
   }
   static allowDebit(opts){
-    if (!StrKey.isValidEd25519PublicKey(opts.destination)){
+    if (!StrKey.isValidEd25519PublicKey(opts.debitor)){
       throw new Error("debitor is invalid");
     }
     if(!opts.asset){
       throw new Error("asset is invalid");
     }
     let attributes = {};
-    attributes.debitor = Keypair.fromPublicKey(opts.destination).xdrAccountId();
+    attributes.debitor = Keypair.fromPublicKey(opts.debitor).xdrAccountId();
     attributes.asset = opts.asset.toXDRObject();
     attributes.cancelDebit = opts.cancelDebit;
     let manageDebitOP = new xdr.ManageDirectDebitOp(attributes);
