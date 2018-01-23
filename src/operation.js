@@ -252,7 +252,7 @@ export class Operation {
     attributes.destination = Keypair.fromPublicKey(opts.destination).xdrAccountId();
     attributes.asset = opts.asset.toXDRObject();
     attributes.cancelDebit = opts.cancelDebit;
-    let manageDebitOP = new xdr.manageDirectDebitOp(attributes);
+    let manageDebitOP = new xdr.ManageDirectDebitOp(attributes);
     let opAttributes = {};
     opAttributes.body = xdr.OperationBody.manageDirectDebit(manageDebitOP);
     this.setSourceAccount(opAttributes, opts);

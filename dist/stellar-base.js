@@ -30692,7 +30692,7 @@ var StellarBase =
 	      attributes.destination = _keypair.Keypair.fromPublicKey(opts.destination).xdrAccountId();
 	      attributes.asset = opts.asset.toXDRObject();
 	      attributes.cancelDebit = opts.cancelDebit;
-	      var manageDebitOP = new _generatedStellarXdr_generated2["default"].manageDirectDebitOp(attributes);
+	      var manageDebitOP = new _generatedStellarXdr_generated2["default"].ManageDirectDebitOp(attributes);
 	      var opAttributes = {};
 	      opAttributes.body = _generatedStellarXdr_generated2["default"].OperationBody.manageDirectDebit(manageDebitOP);
 	      this.setSourceAccount(opAttributes, opts);
