@@ -31128,7 +31128,7 @@ var StellarBase =
 	          break;
 	        case "manageDirectDebit":
 	          result.type = "manageDirectDebit";
-	          result.destination = accountIdtoAddress(attrs);
+	          result.destination = accountIdtoAddress(attrs.destination());
 	          result.asset = _asset.Asset.fromOperation(attrs.asset());
 	          break;
 	        case "directDebitPayment":

@@ -672,7 +672,7 @@ export class Operation {
       break;
       case "manageDirectDebit":
         result.type = "manageDirectDebit";
-        result.destination = accountIdtoAddress(attrs);
+        result.destination = accountIdtoAddress(attrs.destination());
         result.asset = Asset.fromOperation(attrs.asset());
       break;
       case "directDebitPayment":
