@@ -172,4 +172,21 @@ describe('TransactionBuilder', function() {
             done();
         });
     });
+    describe("manage debit",function(){
+
+        it("create debit",function(done){
+            let source = new StellarBase.Account("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", "0");
+            let tx = new StellarBase.TransactionBuilder(source)
+                .addOperation(StellarBase.Operation.allowDebit({
+                    debitor: "GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2",
+                    asset: StellarBase.Asset.native(),
+                    cancelDebit:false,
+                }))
+                .build();
+            expect(tx.source).to.be.equal(source.accountId());
+            expect(tx.operations[0].type).to.be.equal("manageDirectDebit");
+            expect(tx.operations[0].debitor).to.be.equal("GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2");
+            done();
+        })
+    })
 });

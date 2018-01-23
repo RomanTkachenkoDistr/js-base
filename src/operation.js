@@ -249,7 +249,7 @@ export class Operation {
       throw new Error("asset is invalid");
     }
     let attributes = {};
-    attributes.destination = Keypair.fromPublicKey(opts.destination).xdrAccountId();
+    attributes.debitor = Keypair.fromPublicKey(opts.destination).xdrAccountId();
     attributes.asset = opts.asset.toXDRObject();
     attributes.cancelDebit = opts.cancelDebit;
     let manageDebitOP = new xdr.ManageDirectDebitOp(attributes);
@@ -672,7 +672,7 @@ export class Operation {
       break;
       case "manageDirectDebit":
         result.type = "manageDirectDebit";
-        result.destination = accountIdtoAddress(attrs.destination());
+        result.debitor = accountIdtoAddress(attrs.debitor());
         result.asset = Asset.fromOperation(attrs.asset());
       break;
       case "directDebitPayment":

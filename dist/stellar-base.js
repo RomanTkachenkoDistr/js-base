@@ -30682,14 +30682,14 @@ var StellarBase =
 	  }, {
 	    key: "allowDebit",
 	    value: function allowDebit(opts) {
-	      if (!_strkey.StrKey.isValidEd25519PublicKey(opts.destination)) {
+	      if (!_strkey.StrKey.isValidEd25519PublicKey(opts.debitor)) {
 	        throw new Error("debitor is invalid");
 	      }
 	      if (!opts.asset) {
 	        throw new Error("asset is invalid");
 	      }
 	      var attributes = {};
-	      attributes.destination = _keypair.Keypair.fromPublicKey(opts.destination).xdrAccountId();
+	      attributes.debitor = _keypair.Keypair.fromPublicKey(opts.debitor).xdrAccountId();
 	      attributes.asset = opts.asset.toXDRObject();
 	      attributes.cancelDebit = opts.cancelDebit;
 	      var manageDebitOP = new _generatedStellarXdr_generated2["default"].ManageDirectDebitOp(attributes);
@@ -31128,7 +31128,7 @@ var StellarBase =
 	          break;
 	        case "manageDirectDebit":
 	          result.type = "manageDirectDebit";
-	          result.destination = accountIdtoAddress(attrs.destination());
+	          result.debitor = accountIdtoAddress(attrs.debitor());
 	          result.asset = _asset.Asset.fromOperation(attrs.asset());
 	          break;
 	        case "directDebitPayment":
