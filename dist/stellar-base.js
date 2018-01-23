@@ -31130,6 +31130,7 @@ var StellarBase =
 	          result.type = "manageDirectDebit";
 	          result.debitor = accountIdtoAddress(attrs.debitor());
 	          result.asset = _asset.Asset.fromOperation(attrs.asset());
+	          result.cancelDebit = attrs.cancelDebit();
 	          break;
 	        case "directDebitPayment":
 	          result.type = "directDebitPayment";
